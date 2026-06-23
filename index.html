@@ -703,6 +703,11 @@ function isRecentlyEnded(m) {
   return m.effState === 'post' && m.date > Date.now() - 24 * 3600_000;
 }
 function isLiveNow(m) { return m.effState === 'in'; }
+function isStartingSoon(m) {
+  if (m.effState !== 'pre') return false;
+  const diff = m.date - Date.now();
+  return diff > 0 && diff <= 4 * 3600_000;
+}
 
 /* ---- tabs ------------------------------------------------------------- */
 function buildTabs() {
@@ -716,7 +721,7 @@ function buildTabs() {
     return catLabel(a).localeCompare(catLabel(b));
   });
 
-  const liveN = MATCHES.filter(m => isLiveNow(m) || isRecentlyEnded(m)).length;
+  const liveN = MATCHES.filter(m => isLiveNow(m) || isStartingSoon(m) || isRecentlyEnded(m)).length;
   const weekN = MATCHES.filter(m => !isRecentlyEnded(m)).length;
   const popN  = MATCHES.filter(m => m.popular && !isRecentlyEnded(m)).length;
 
@@ -778,16 +783,18 @@ function render() {
 /* -- Live Now: currently live, then recently ended ---------------------- */
 function renderLive(view) {
   const live  = MATCHES.filter(isLiveNow).sort((a, b) => a.date - b.date);
+  const soon  = MATCHES.filter(isStartingSoon).sort((a, b) => a.date - b.date);
   const ended = MATCHES.filter(isRecentlyEnded).sort((a, b) => b.date - a.date);
 
-  if (!live.length && !ended.length) {
+  if (!live.length && !soon.length && !ended.length) {
     view.innerHTML = `<p class="empty">Nothing live right now — check This Week for upcoming fixtures.</p>`;
     return;
   }
 
   let html = '';
-  if (live.length)  html += gridSection('Live now',       live,  false);
-  if (ended.length) html += gridSection('Recently ended', ended, true);
+  if (live.length)  html += gridSection('Live now',        live,  false);
+  if (soon.length)  html += gridSection('Starting soon',   soon,  false);
+  if (ended.length) html += gridSection('Recently ended',  ended, true);
   view.innerHTML = html;
 }
 
@@ -885,7 +892,8 @@ function card(m, forceEnded = false) {
   // Body
   let bodyHtml;
   if (m.teams) {
-    const clockHtml = '';
+    const clockHtml = isLive && m.effDetail
+      ? `<div class="match-clock">${esc(m.effDetail)}</div>` : '';
     bodyHtml = `<div class="teams">
       ${teamRow(m.teams.home, sc?.home ?? null, homeLosing)}
       ${teamRow(m.teams.away, sc?.away ?? null, awayLosing)}
