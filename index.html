@@ -493,6 +493,8 @@ const CAT_ORDER = [
   'billiards','darts',
 ];
 
+const SOON_ORDER = ['soccer', 'basketball', 'baseball', 'football'];
+
 function normCat(raw) {
   if (!raw) return 'other';
   const key = raw.toLowerCase().replace(/[\s_]+/g, '-');
@@ -783,7 +785,12 @@ function render() {
 /* -- Live Now: currently live, then recently ended ---------------------- */
 function renderLive(view) {
   const live  = MATCHES.filter(isLiveNow).sort((a, b) => a.date - b.date);
-  const soon  = MATCHES.filter(isStartingSoon).sort((a, b) => a.date - b.date);
+  const soon  = MATCHES.filter(isStartingSoon).sort((a, b) => {
+    const pa = SOON_ORDER.indexOf(a.cat), pb = SOON_ORDER.indexOf(b.cat);
+    const ra = pa === -1 ? SOON_ORDER.length : pa;
+    const rb = pb === -1 ? SOON_ORDER.length : pb;
+    return ra - rb || a.date - b.date;
+  });
   const ended = MATCHES.filter(isRecentlyEnded).sort((a, b) => b.date - a.date);
 
   if (!live.length && !soon.length && !ended.length) {
