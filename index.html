@@ -10,94 +10,403 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
 <style>
-  :root{
-    --base:#12130f; --panel:#1b1d17; --panel-2:#23261e; --line:#34382c;
-    --text:#e6e4d9; --muted:#8a8d7c; --live:#ff5c38; --sched:#7fb069; --r:10px;
-    --pop:#f0b429;
+  :root {
+    --base:    #12130f;
+    --panel:   #1b1d17;
+    --panel-2: #23261e;
+    --line:    #34382c;
+    --text:    #e6e4d9;
+    --muted:   #8a8d7c;
+    --live:    #ff5c38;
+    --sched:   #7fb069;
+    --pop:     #f0b429;
+    --r:       10px;
   }
-  *{box-sizing:border-box} html,body{margin:0}
-  body{background:var(--base);color:var(--text);font-family:"Inter",system-ui,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
-  a{color:inherit}
-  button{font-family:inherit;cursor:pointer}
 
-  .bar{display:flex;align-items:center;gap:24px;padding:14px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;background:rgba(18,19,15,.92);backdrop-filter:blur(8px)}
-  .brand{display:flex;align-items:center;gap:11px}
-  .mark{width:26px;height:26px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px}
-  .mark i{background:var(--muted);border-radius:2px}
-  .mark i:nth-child(1){background:var(--live)} .mark i:nth-child(4){background:var(--sched)}
-  .brand b{font-family:"Archivo",sans-serif;font-weight:900;letter-spacing:.14em;font-size:17px}
-  .brand span{color:var(--muted);font-size:11px;letter-spacing:.18em}
-  .status-line{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:.04em}
-  .status-line b{color:var(--live);font-weight:700}
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--base);
+    color: var(--text);
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font-family: inherit; cursor: pointer; }
 
-  .tabs{display:flex;gap:6px;flex-wrap:wrap;padding:14px 22px;border-bottom:1px solid var(--line)}
-  .tab{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:500;letter-spacing:.03em;transition:.12s}
-  .tab:hover{color:var(--text);border-color:var(--muted)}
-  .tab[data-active="true"]{background:var(--text);color:var(--base);border-color:var(--text);font-weight:600}
-  .tab .ct{font-family:"JetBrains Mono",monospace;font-size:10px;opacity:.7;margin-left:5px}
+  /* top bar */
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(18,19,15,.92);
+    backdrop-filter: blur(8px);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .mark {
+    width: 26px; height: 26px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .mark i { background: var(--muted); border-radius: 2px; }
+  .mark i:nth-child(1) { background: var(--live); }
+  .mark i:nth-child(4) { background: var(--sched); }
+  .brand-name {
+    font-family: "Archivo", sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: .01em;
+    line-height: 1;
+  }
+  .brand-name em { font-style: normal; color: var(--sched); }
+  .brand-sub {
+    font-size: 10px;
+    letter-spacing: .18em;
+    color: var(--muted);
+    line-height: 1;
+    margin-top: 3px;
+  }
+  .status-line {
+    margin-left: auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .04em;
+    white-space: nowrap;
+  }
+  .status-line b { color: var(--live); font-weight: 700; }
 
-  .wrap{max-width:1180px;margin:0 auto;padding:26px 22px 80px}
-  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin:22px 0 12px}
-  .eyebrow:first-child{margin-top:0}
-  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+  /* tabs */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tab {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 5px 13px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: .02em;
+    transition: border-color .12s, color .12s, background .12s;
+  }
+  .tab:hover { color: var(--text); border-color: var(--muted); }
+  .tab[data-active="true"] {
+    background: var(--text);
+    color: var(--base);
+    border-color: var(--text);
+    font-weight: 600;
+  }
+  .tab .ct {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    opacity: .65;
+    margin-left: 5px;
+  }
 
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:14px;transition:.14s}
-  .card:hover{border-color:var(--muted)}
-  .card.live{border-color:color-mix(in srgb,var(--live) 45%,var(--line))}
-  .card-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .league{font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .card-status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.05em;white-space:nowrap;font-family:"JetBrains Mono",monospace}
-  .card-status[data-s="in"]{color:var(--live)} .card-status[data-s="pre"]{color:var(--sched)}
-  .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
-  .card-status[data-s="in"] .dot{animation:pulse 1.4s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  /* layout */
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 22px 80px; }
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: .2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 28px 0 12px;
+  }
+  .eyebrow:first-child { margin-top: 0; }
+  .grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  }
 
-  .team{display:flex;align-items:center;gap:10px}
-  .team .who{display:flex;align-items:center;gap:9px;min-width:0}
-  .logo{width:26px;height:26px;border-radius:6px;flex-shrink:0;object-fit:contain;background:var(--panel-2)}
-  .ini{width:26px;height:26px;border-radius:6px;flex-shrink:0;display:grid;place-items:center;font-family:"Archivo",sans-serif;font-weight:700;font-size:11px;color:#12130f;background:var(--muted)}
-  .nm{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .match-title{font-weight:600;font-size:14px;line-height:1.45;color:var(--text)}
+  /* card */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    transition: border-color .14s;
+  }
+  .card:hover { border-color: var(--muted); }
+  .card.live  { border-color: color-mix(in srgb, var(--live)  45%, var(--line)); }
+  .card.ended { opacity: .72; }
 
-  .watch{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
-  .wlabel{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
-  .wrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-  .wbtn{display:inline-flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--text);transition:.12s}
-  .wbtn:hover{border-color:var(--text)}
-  .wbtn.ghost{background:transparent;font-weight:500;color:var(--muted);pointer-events:none}
-  .wbtn .arr{color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:11px}
-  .pop-badge{font-size:10.5px;font-weight:600;font-family:"JetBrains Mono",monospace;color:var(--pop);letter-spacing:.04em}
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .cat-label {
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    white-space: nowrap;
+    font-family: "JetBrains Mono", monospace;
+    flex-shrink: 0;
+  }
+  .card-status[data-s="live"]  { color: var(--live); }
+  .card-status[data-s="sched"] { color: var(--sched); }
+  .card-status[data-s="ended"] { color: var(--muted); }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+    animation: pulse 1.4s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
 
-  .empty{color:var(--muted);padding:50px 0;text-align:center}
-  .banner{background:color-mix(in srgb,var(--live) 12%,var(--panel));border:1px solid color-mix(in srgb,var(--live) 40%,var(--line));border-radius:var(--r);padding:14px 16px;margin-bottom:20px;font-size:13.5px;color:var(--text)}
-  .banner code{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted)}
-  .foot{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.6}
+  /* teams + scores */
+  .teams { display: flex; flex-direction: column; gap: 8px; }
+  .team  { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .logo {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    object-fit: contain;
+    background: var(--panel-2);
+  }
+  .ini {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    color: #12130f;
+    background: var(--muted);
+  }
+  .nm {
+    font-weight: 600;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+  .nm.dim  { color: var(--muted); font-weight: 400; }
+  .sc {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 17px;
+    flex-shrink: 0;
+    min-width: 1.6ch;
+    text-align: right;
+  }
+  .sc.dim  { color: var(--muted); font-weight: 400; }
+  .match-clock {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--live);
+    letter-spacing: .04em;
+    margin-top: 2px;
+  }
+  .match-title { font-weight: 600; font-size: 14px; line-height: 1.4; }
 
-  /* ---- modal ---- */
-  .overlay{position:fixed;inset:0;z-index:100;background:rgba(12,13,10,.88);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}
-  .overlay[hidden]{display:none!important}
-  .modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;width:100%;max-width:920px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
-  .modal-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);gap:12px;flex-shrink:0}
-  .modal-title{font-family:"Archivo",sans-serif;font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .modal-close{background:var(--panel-2);border:1px solid var(--line);color:var(--muted);border-radius:8px;width:32px;height:32px;font-size:16px;flex-shrink:0;display:grid;place-items:center;transition:.12s}
-  .modal-close:hover{color:var(--text);border-color:var(--muted)}
-  .stream-tabs{display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px;border-bottom:1px solid var(--line);flex-shrink:0}
-  .stab{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:500;font-family:"JetBrains Mono",monospace;transition:.12s}
-  .stab:hover{color:var(--text);border-color:var(--muted)}
-  .stab.active{background:var(--text);color:var(--base);border-color:var(--text);font-weight:600}
-  .stab.hd{color:var(--sched);border-color:color-mix(in srgb,var(--sched) 40%,var(--line))}
-  .stab.hd:hover{border-color:var(--sched)}
-  .stab.hd.active{background:var(--sched);color:var(--base);border-color:var(--sched)}
-  .stab-div{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.14em;color:var(--muted);align-self:center;padding:0 6px;opacity:.5;user-select:none}
-  .stream-frame{flex:1;min-height:0;background:#000;position:relative}
-  .stream-frame iframe{width:100%;height:100%;border:none;min-height:430px;display:block}
-  .stream-msg{padding:60px 40px;text-align:center;color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:13px}
+  /* watch row */
+  .watch {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .wlabel {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .wrow { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+  .wbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    transition: border-color .12s;
+  }
+  .wbtn:hover { border-color: var(--text); }
+  .wbtn.ghost {
+    background: transparent;
+    font-weight: 500;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .arr { color: var(--muted); font-size: 11px; font-family: "JetBrains Mono", monospace; }
+  .pop-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    font-family: "JetBrains Mono", monospace;
+    color: var(--pop);
+    letter-spacing: .04em;
+  }
 
-  @media(max-width:560px){
-    .wrap{padding:20px 16px 60px}
-    .status-line{display:none}
-    .modal{max-height:96vh;border-radius:10px}
-    .stream-frame iframe{min-height:260px}
+  /* misc */
+  .empty { color: var(--muted); padding: 50px 0; text-align: center; }
+  .banner {
+    background: color-mix(in srgb, var(--live) 10%, var(--panel));
+    border: 1px solid color-mix(in srgb, var(--live) 35%, var(--line));
+    border-radius: var(--r);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .banner code { font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--muted); }
+  .foot {
+    margin-top: 34px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* modal */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(12,13,10,.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .overlay[hidden] { display: none !important; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 920px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .modal-title {
+    font-family: "Archivo", sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .modal-close {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 8px;
+    width: 32px; height: 32px;
+    font-size: 16px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    transition: color .12s, border-color .12s;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--muted); }
+  .stream-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .stab {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 5px 11px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: "JetBrains Mono", monospace;
+    transition: color .12s, border-color .12s, background .12s;
+  }
+  .stab:hover { color: var(--text); border-color: var(--muted); }
+  .stab.active { background: var(--text); color: var(--base); border-color: var(--text); font-weight: 600; }
+  .stab.hd { color: var(--sched); border-color: color-mix(in srgb, var(--sched) 40%, var(--line)); }
+  .stab.hd:hover { border-color: var(--sched); }
+  .stab.hd.active { background: var(--sched); color: var(--base); border-color: var(--sched); }
+  .stab-div {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    color: var(--muted);
+    opacity: .45;
+    user-select: none;
+    padding: 0 2px;
+  }
+  .stream-frame { flex: 1; min-height: 0; background: #000; }
+  .stream-frame iframe { width: 100%; height: 100%; border: none; min-height: 430px; display: block; }
+  .stream-msg {
+    padding: 60px 40px;
+    text-align: center;
+    color: var(--muted);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+  }
+
+  @media (max-width: 580px) {
+    .wrap { padding: 18px 14px 60px; }
+    .status-line { display: none; }
+    .modal { max-height: 96vh; border-radius: 10px; }
+    .stream-frame iframe { min-height: 260px; }
   }
 </style>
 </head>
@@ -106,13 +415,16 @@
 <header class="bar">
   <div class="brand">
     <div class="mark"><i></i><i></i><i></i><i></i></div>
-    <div><b>pleYe</b><br><span>WHAT'S ON NOW</span></div>
+    <div>
+      <div class="brand-name">ple<em>Y</em>e</div>
+      <div class="brand-sub">WHAT'S ON NOW</div>
+    </div>
   </div>
   <div class="status-line" id="statusline">loading…</div>
 </header>
 
 <nav class="tabs" id="tabs"></nav>
-<main class="wrap" id="view"><p class="empty">Fetching today's fixtures…</p></main>
+<main class="wrap" id="view"><p class="empty">Fetching fixtures…</p></main>
 
 <div class="overlay" id="modal" hidden>
   <div class="modal">
@@ -126,53 +438,304 @@
 </div>
 
 <script>
-const API   = 'https://streamed.pk/api';
-const BADGE = 'https://streamed.pk/api/images/badge';
+const API       = 'https://streamed.pk/api';
+const BADGE     = 'https://streamed.pk/api/images/badge';
+const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
 
+/* ---- category normalisation ------------------------------------------- */
+
+const CAT_NORM = {
+  'american-football':         'football',
+  'american_football':         'football',
+  'americanfootball':          'football',
+  'nfl':                       'football',
+  'afl':                       'australian-football',
+  'australian-rules':          'australian-football',
+  'australian-rules-football': 'australian-football',
+  'aussie-rules':              'australian-football',
+  'canadian-football':         'canadian-football',
+  'canadian_football':         'canadian-football',
+  'ice-hockey':                'hockey',
+  'icehockey':                 'hockey',
+  'formula-1':                 'formula-1',
+  'formula1':                  'formula-1',
+  'f1':                        'formula-1',
+};
+
+const CAT_LABEL = {
+  'soccer':              'Soccer',
+  'basketball':          'Basketball',
+  'football':            'Football',
+  'baseball':            'Baseball',
+  'hockey':              'Hockey',
+  'tennis':              'Tennis',
+  'cricket':             'Cricket',
+  'rugby':               'Rugby',
+  'rugby-league':        'Rugby League',
+  'rugby-union':         'Rugby Union',
+  'australian-football': 'Australian Football',
+  'canadian-football':   'Canadian Football',
+  'mma':                 'MMA',
+  'boxing':              'Boxing',
+  'golf':                'Golf',
+  'motorsport':          'Motorsport',
+  'formula-1':           'Formula 1',
+  'cycling':             'Cycling',
+  'volleyball':          'Volleyball',
+  'handball':            'Handball',
+  'darts':               'Darts',
+  'snooker':             'Snooker',
+};
+
+const CAT_ORDER = [
+  'soccer','basketball','football','baseball','hockey','tennis','cricket',
+  'rugby','rugby-league','rugby-union','australian-football','canadian-football',
+  'mma','boxing','golf','motorsport','formula-1','cycling','volleyball',
+  'handball','darts','snooker',
+];
+
+function normCat(raw) {
+  if (!raw) return 'other';
+  const key = raw.toLowerCase().replace(/[\s_]+/g, '-');
+  return CAT_NORM[key] || key;
+}
+function catLabel(cat) {
+  return CAT_LABEL[cat] || cat.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/* ---- ESPN sport-duration fallback (ms) -------------------------------- */
+// Used when ESPN has no data for a match — gives a reasonable ended threshold.
+const DURATION = {
+  soccer:                125 * 60_000,
+  basketball:            160 * 60_000,
+  football:              220 * 60_000,
+  baseball:              220 * 60_000,
+  hockey:                160 * 60_000,
+  'australian-football': 140 * 60_000,
+  'canadian-football':   220 * 60_000,
+  rugby:                 120 * 60_000,
+  'rugby-league':        120 * 60_000,
+  'rugby-union':         120 * 60_000,
+  tennis:                180 * 60_000,
+  mma:                   240 * 60_000,
+  boxing:                240 * 60_000,
+  default:               180 * 60_000,
+};
+
+/* ---- ESPN scoreboards ------------------------------------------------- */
+// These sport/league pairs are fetched on every pull. Failures are silently ignored.
+const ESPN_LEAGUES = [
+  ['soccer',     'all'],           // broad soccer coverage
+  ['soccer',     'fifa.world'],
+  ['soccer',     'uefa.nations'],
+  ['soccer',     'uefa.champions'],
+  ['basketball', 'nba'],
+  ['basketball', 'wnba'],
+  ['football',   'nfl'],
+  ['baseball',   'mlb'],
+  ['hockey',     'nhl'],
+];
+
+async function fetchESPN() {
+  const results = await Promise.allSettled(
+    ESPN_LEAGUES.map(([sport, league]) =>
+      fetch(`${ESPN_BASE}/${sport}/${league}/scoreboard`)
+        .then(r => r.ok ? r.json() : { events: [] })
+        .then(j => j.events || [])
+    )
+  );
+
+  const idx = new Map();
+  results
+    .filter(r => r.status === 'fulfilled')
+    .flatMap(r => r.value)
+    .forEach(ev => {
+      const comps = ev.competitions?.[0]?.competitors;
+      if (!comps || comps.length < 2) return;
+
+      const home  = comps.find(c => c.homeAway === 'home') || comps[0];
+      const away  = comps.find(c => c.homeAway === 'away') || comps[1];
+      const state = ev.status?.type?.state || 'pre'; // 'pre' | 'in' | 'post'
+
+      const key = [home, away]
+        .map(c => normStr(c.team?.displayName || c.team?.name || ''))
+        .sort()
+        .join('|');
+
+      if (!key || key === '|') return;
+
+      idx.set(key, {
+        state,
+        detail: ev.status?.type?.shortDetail || '',
+        // Scores are only meaningful in-progress or final
+        scores: (state === 'in' || state === 'post')
+          ? { home: home.score, away: away.score }
+          : null,
+      });
+    });
+
+  return idx;
+}
+
+/* ---- team name normalisation for ESPN matching ----------------------- */
+function normStr(s) {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // strip diacritics
+    .replace(/[^a-z0-9]/g, '');      // alphanumeric only
+}
+
+let ESPN_INDEX = new Map();
+
+function espnLookup(m) {
+  let names = [];
+  if (m.teams) {
+    names = [m.teams.home?.name, m.teams.away?.name].filter(Boolean).map(normStr);
+  } else if (m.title) {
+    // e.g. "Portugal v Uzbekistan" or "Portugal vs Uzbekistan"
+    const parts = m.title.split(/\s+vs?\.?\s+/i);
+    if (parts.length === 2) names = parts.map(p => normStr(p.trim()));
+  }
+  if (names.length < 2) return null;
+
+  const key = [...names].sort().join('|');
+
+  // 1. exact match
+  if (ESPN_INDEX.has(key)) return ESPN_INDEX.get(key);
+
+  // 2. prefix-based fuzzy match (handles "Man United" vs "Manchester United")
+  for (const [k, v] of ESPN_INDEX) {
+    const kp = k.split('|');
+    if (kp.length === 2 && names.every(n => kp.some(kn => kn.startsWith(n) || n.startsWith(kn)))) {
+      return v;
+    }
+  }
+
+  return null;
+}
+
+/* ---- derive effective match state ------------------------------------- */
+function computeStatus(m) {
+  const espn = espnLookup(m);
+  const now  = Date.now();
+
+  if (espn) {
+    const state = espn.state === 'in' ? 'in' : espn.state === 'post' ? 'post' : 'pre';
+    return { state, detail: espn.detail, scores: espn.scores };
+  }
+
+  // No ESPN data — use Streamed.pk live flag + time-based ended detection
+  if (m.isLive) {
+    const dur = DURATION[m.cat] || DURATION.default;
+    if (m.date + dur < now) {
+      // Streamed.pk still shows as live but the match has almost certainly ended
+      return { state: 'post', detail: 'FINAL', scores: null };
+    }
+    // Still running — show elapsed minutes for soccer, just "LIVE" for others
+    const mins   = Math.round((now - m.date) / 60_000);
+    const detail = (m.cat === 'soccer' && mins > 0) ? `~${mins}'` : null;
+    return { state: 'in', detail, scores: null };
+  }
+
+  // Past the start time, not marked live → recently ended
+  if (m.date < now && m.date > now - 24 * 3600_000) {
+    return { state: 'post', detail: 'FINAL', scores: null };
+  }
+
+  return { state: 'pre', detail: null, scores: null };
+}
+
+/* ---- state ------------------------------------------------------------ */
 let MATCHES = [], MATCH_MAP = {}, lastOk = 0, hadError = false, activeTab = 'live';
 let currentStreams = [];
 
-/* ---- fetch ------------------------------------------------------------ */
+/* ---- pull ------------------------------------------------------------- */
 async function pull() {
   try {
-    const [live, today] = await Promise.all([
-      fetch(`${API}/matches/live`).then(r => r.ok ? r.json() : []),
-      fetch(`${API}/matches/all-today`).then(r => r.ok ? r.json() : []),
+    const now     = Date.now();
+    const cutoff  = now - 24 * 3600_000;
+    const weekEnd = startOfDay(now) + 7 * 24 * 3600_000;
+
+    const [[pkLive, pkAll], espnIdx] = await Promise.all([
+      Promise.all([
+        fetch(`${API}/matches/live`).then(r => r.ok ? r.json() : []),
+        fetch(`${API}/matches/all`).then(r  => r.ok ? r.json() : []),
+      ]),
+      fetchESPN(),
     ]);
 
-    const liveIds = new Set(live.map(m => m.id));
-    const merged  = {};
-    today.forEach(m => { merged[m.id] = { ...m, isLive: liveIds.has(m.id) }; });
-    live.forEach(m  => { if (!merged[m.id]) merged[m.id] = { ...m, isLive: true }; });
+    ESPN_INDEX = espnIdx;
 
-    MATCHES   = Object.values(merged);
+    const liveIds = new Set(pkLive.map(m => m.id));
+    const merged  = {};
+
+    pkAll
+      .filter(m => m.date >= cutoff && m.date <= weekEnd)
+      .forEach(m => {
+        merged[m.id] = { ...m, cat: normCat(m.category), isLive: liveIds.has(m.id) };
+      });
+    pkLive.forEach(m => {
+      if (!merged[m.id]) merged[m.id] = { ...m, cat: normCat(m.category), isLive: true };
+    });
+
+    // Augment each match with computed status (live/ended/pre, scores, clock)
+    MATCHES = Object.values(merged).map(m => {
+      const st = computeStatus(m);
+      return { ...m, effState: st.state, effDetail: st.detail, effScores: st.scores };
+    });
     MATCH_MAP = {};
     MATCHES.forEach(m => { MATCH_MAP[m.id] = m; });
-    lastOk   = Date.now();
+    lastOk   = now;
     hadError = false;
-  } catch {
+  } catch (err) {
+    console.error(err);
     hadError = true;
   }
   render();
 }
 
+/* ---- state helpers ---------------------------------------------------- */
+function isRecentlyEnded(m) {
+  return m.effState === 'post' && m.date > Date.now() - 24 * 3600_000;
+}
+function isLiveNow(m) { return m.effState === 'in'; }
+
 /* ---- tabs ------------------------------------------------------------- */
 function buildTabs() {
-  const cats = [...new Set(MATCHES.map(m => m.category).filter(Boolean))].sort();
+  const activeCats = [...new Set(
+    MATCHES.filter(m => !isRecentlyEnded(m)).map(m => m.cat).filter(c => c && c !== 'other')
+  )].sort((a, b) => {
+    const pa = CAT_ORDER.indexOf(a), pb = CAT_ORDER.indexOf(b);
+    if (pa !== -1 && pb !== -1) return pa - pb;
+    if (pa !== -1) return -1;
+    if (pb !== -1) return  1;
+    return catLabel(a).localeCompare(catLabel(b));
+  });
+
+  const liveN = MATCHES.filter(m => isLiveNow(m) || isRecentlyEnded(m)).length;
+  const weekN = MATCHES.filter(m => !isRecentlyEnded(m)).length;
+  const popN  = MATCHES.filter(m => m.popular && !isRecentlyEnded(m)).length;
+
   const defs = [
-    { id: 'live',    name: 'Live now', ct: MATCHES.filter(m => m.isLive).length },
-    { id: 'popular', name: 'Popular',  ct: MATCHES.filter(m => m.popular).length },
-    { id: 'all',     name: 'All today',ct: MATCHES.length },
-    ...cats.map(c => ({ id: c, name: cap(c), ct: MATCHES.filter(m => m.category === c).length })),
+    { id: 'live',    name: 'Live Now',  ct: liveN },
+    { id: 'week',    name: 'This Week', ct: weekN },
+    { id: 'popular', name: 'Popular',   ct: popN },
+    ...activeCats.map(c => ({
+      id:   c,
+      name: catLabel(c),
+      ct:   MATCHES.filter(m => m.cat === c && !isRecentlyEnded(m)).length,
+    })),
   ];
+
   const el = document.getElementById('tabs');
   el.innerHTML = '';
   defs.forEach(d => {
     const b = document.createElement('button');
-    b.className       = 'tab';
-    b.dataset.active  = activeTab === d.id;
-    b.innerHTML       = `${esc(d.name)}<span class="ct">${d.ct}</span>`;
-    b.onclick         = () => { activeTab = d.id; render(); };
+    b.className      = 'tab';
+    b.dataset.active = activeTab === d.id;
+    b.innerHTML      = `${esc(d.name)}<span class="ct">${d.ct}</span>`;
+    b.onclick        = () => { activeTab = d.id; render(); };
     el.appendChild(b);
   });
 }
@@ -186,7 +749,7 @@ function render() {
     sl.textContent = 'feed unreachable';
   } else {
     const ago = lastOk ? Math.round((Date.now() - lastOk) / 1000) : 0;
-    const n   = MATCHES.filter(m => m.isLive).length;
+    const n   = MATCHES.filter(isLiveNow).length;
     sl.innerHTML = `<b>${n} live</b> · updated ${ago}s ago · auto-refresh 30s`;
   }
 
@@ -194,97 +757,171 @@ function render() {
 
   if (hadError) {
     view.innerHTML = `<div class="banner">Couldn't reach the fixtures feed.
-      The streamed.pk API is public — if the browser is blocking the request,
-      try serving this file through a local web server (<code>npx serve .</code>).</div>`;
-    return;
-  }
-
-  let list = MATCHES.slice();
-  if      (activeTab === 'live')    list = list.filter(m => m.isLive);
-  else if (activeTab === 'popular') list = list.filter(m => m.popular);
-  else if (activeTab !== 'all')     list = list.filter(m => m.category === activeTab);
-
-  list.sort((a, b) => (b.isLive - a.isLive) || (a.date - b.date));
-
-  if (!list.length) {
-    view.innerHTML = `<p class="empty">${
-      activeTab === 'live'
-        ? 'Nothing live right now — check All Today or a sport tab.'
-        : 'No fixtures found here.'
-    }</p>`;
+      The streamed.pk API is public — if the browser is blocking requests,
+      try serving via <code>npx serve .</code>.</div>`;
     appendFoot(view);
     return;
   }
 
-  const liveRows  = list.filter(m =>  m.isLive);
-  const schedRows = list.filter(m => !m.isLive);
+  if      (activeTab === 'live')    renderLive(view);
+  else if (activeTab === 'week')    renderWeek(view);
+  else if (activeTab === 'popular') renderSimple(view, MATCHES.filter(m => m.popular && !isRecentlyEnded(m)), 'No popular matches right now.');
+  else                              renderSimple(view, MATCHES.filter(m => m.cat === activeTab && !isRecentlyEnded(m)), 'No fixtures in this category.');
+
+  appendFoot(view);
+  hookLogoErrors(view);
+}
+
+/* -- Live Now: currently live, then recently ended ---------------------- */
+function renderLive(view) {
+  const live  = MATCHES.filter(isLiveNow).sort((a, b) => a.date - b.date);
+  const ended = MATCHES.filter(isRecentlyEnded).sort((a, b) => b.date - a.date);
+
+  if (!live.length && !ended.length) {
+    view.innerHTML = `<p class="empty">Nothing live right now — check This Week for upcoming fixtures.</p>`;
+    return;
+  }
+
   let html = '';
-  if (liveRows.length)  html += `<p class="eyebrow">Live · ${liveRows.length}</p><div class="grid">${liveRows.map(card).join('')}</div>`;
-  if (schedRows.length) html += `<p class="eyebrow">Upcoming · ${schedRows.length}</p><div class="grid">${schedRows.map(card).join('')}</div>`;
+  if (live.length)  html += gridSection('Live now',       live,  false);
+  if (ended.length) html += gridSection('Recently ended', ended, true);
+  view.innerHTML = html;
+}
+
+/* -- This Week: today first, then day by day ---------------------------- */
+function renderWeek(view) {
+  const now        = Date.now();
+  const todayStart = startOfDay(now);
+  const weekEnd    = todayStart + 7 * 24 * 3600_000;
+
+  const list = MATCHES
+    .filter(m => !isRecentlyEnded(m) && m.date >= todayStart && m.date < weekEnd)
+    .sort((a, b) => a.date - b.date);
+
+  if (!list.length) {
+    view.innerHTML = `<p class="empty">No fixtures found in the next 7 days.</p>`;
+    return;
+  }
+
+  const groups = new Map();
+  list.forEach(m => {
+    const key = startOfDay(m.date);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(m);
+  });
+
+  let html = '';
+  [...groups.keys()].sort().forEach(dayTs => {
+    const rows    = groups.get(dayTs);
+    const isToday = dayTs === todayStart;
+    const label   = isToday
+      ? 'Today'
+      : new Date(dayTs).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+    html += gridSection(label, rows, false);
+  });
 
   view.innerHTML = html;
-  appendFoot(view);
+}
 
-  view.querySelectorAll('img.logo').forEach(img => {
-    img.onerror = () => {
-      const s       = document.createElement('span');
-      s.className   = 'ini';
-      s.textContent = img.dataset.ini;
-      img.replaceWith(s);
-    };
-  });
+/* -- Generic list (live first, then by date) ---------------------------- */
+function renderSimple(view, list, emptyMsg) {
+  if (!list.length) { view.innerHTML = `<p class="empty">${esc(emptyMsg)}</p>`; return; }
+  list.sort((a, b) => (isLiveNow(b) - isLiveNow(a)) || (a.date - b.date));
+  view.innerHTML = gridSection('', list, false);
+}
+
+function gridSection(label, rows, forceEnded) {
+  const head = label ? `<p class="eyebrow">${esc(label)} · ${rows.length}</p>` : '';
+  return `${head}<div class="grid">${rows.map(m => card(m, forceEnded)).join('')}</div>`;
 }
 
 /* ---- card ------------------------------------------------------------- */
-function fmtDate(ms) {
+function fmtTime(ms) {
   try { return new Date(ms).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' }); }
   catch { return ''; }
 }
 
-function teamRow(team) {
+function teamRow(team, score, losing) {
   if (!team) return '';
   const ini  = (team.name || '?').slice(0, 3).toUpperCase();
   const logo = team.badge
     ? `<img class="logo" src="${BADGE}/${encodeURIComponent(team.badge)}.webp" data-ini="${esc(ini)}" alt="">`
     : `<span class="ini">${esc(ini)}</span>`;
-  return `<div class="team"><div class="who">${logo}<span class="nm">${esc(team.name || '')}</span></div></div>`;
+  const scoreHtml = score != null
+    ? `<span class="sc${losing ? ' dim' : ''}">${esc(String(score))}</span>`
+    : '';
+  return `<div class="team">${logo}<span class="nm${losing ? ' dim' : ''}">${esc(team.name || '')}</span>${scoreHtml}</div>`;
 }
 
-function card(m) {
-  const teamsHtml = m.teams
-    ? `<div>${teamRow(m.teams.home)}<div style="height:8px"></div>${teamRow(m.teams.away)}</div>`
-    : `<div class="match-title">${esc(m.title || '')}</div>`;
+function card(m, forceEnded = false) {
+  const isLive  = m.effState === 'in' && !forceEnded;
+  const isEnded = forceEnded || m.effState === 'post';
 
-  const srcN      = (m.sources || []).length;
-  const streamBtn = srcN
+  // Status chip
+  let statusAttr, statusInner;
+  if (isLive) {
+    statusAttr  = 'live';
+    statusInner = '<span class="dot"></span>LIVE' + (m.effDetail ? ` · ${esc(m.effDetail)}` : '');
+  } else if (isEnded) {
+    statusAttr  = 'ended';
+    statusInner = 'FINAL';
+  } else {
+    statusAttr  = 'sched';
+    statusInner = esc(fmtTime(m.date));
+  }
+
+  // Scores
+  const sc = (isLive || isEnded) ? m.effScores : null;
+  const homeN    = sc?.home != null ? Number(sc.home) : null;
+  const awayN    = sc?.away != null ? Number(sc.away) : null;
+  const hasScore = homeN !== null && awayN !== null;
+
+  const homeLosing = hasScore && homeN < awayN;
+  const awayLosing = hasScore && awayN < homeN;
+
+  // Body
+  let bodyHtml;
+  if (m.teams) {
+    const clockHtml = isLive && m.effDetail
+      ? `<div class="match-clock">${esc(m.effDetail)}</div>` : '';
+    bodyHtml = `<div class="teams">
+      ${teamRow(m.teams.home, sc?.home ?? null, homeLosing)}
+      ${teamRow(m.teams.away, sc?.away ?? null, awayLosing)}
+      ${clockHtml}
+    </div>`;
+  } else {
+    bodyHtml = `<div class="match-title">${esc(m.title || '')}</div>`;
+  }
+
+  const srcN     = (m.sources || []).length;
+  const watchBtn = srcN
     ? `<button class="wbtn" data-match="${esc(m.id)}">Watch <span class="arr">▶</span></button>`
     : `<span class="wbtn ghost">No streams</span>`;
-  const popBadge  = m.popular ? `<span class="pop-badge">★ Popular</span>` : '';
+  const popBadge = m.popular ? `<span class="pop-badge">★ Popular</span>` : '';
 
-  return `<div class="card ${m.isLive ? 'live' : ''}">
+  const cls = ['card', isLive ? 'live' : '', isEnded ? 'ended' : ''].filter(Boolean).join(' ');
+
+  return `<div class="${cls}">
   <div class="card-top">
-    <span class="league">${esc(cap(m.category || 'sport'))}</span>
-    <span class="card-status" data-s="${m.isLive ? 'in' : 'pre'}">${
-      m.isLive ? '<span class="dot"></span>LIVE' : esc(fmtDate(m.date))
-    }</span>
+    <span class="cat-label">${esc(catLabel(m.cat || m.category || 'sport'))}</span>
+    <span class="card-status" data-s="${statusAttr}">${statusInner}</span>
   </div>
-  ${teamsHtml}
+  ${bodyHtml}
   <div class="watch">
     <span class="wlabel">Streams · ${srcN}</span>
-    <div class="wrow">${streamBtn}${popBadge}</div>
+    <div class="wrow">${watchBtn}${popBadge}</div>
   </div>
 </div>`;
 }
 
-/* ---- streams modal ---------------------------------------------------- */
+/* ---- stream modal ----------------------------------------------------- */
 document.getElementById('view').addEventListener('click', e => {
   const btn = e.target.closest('[data-match]');
   if (btn) openStreams(btn.dataset.match);
 });
-
 document.getElementById('modal-close').onclick = closeModal;
 document.getElementById('modal').addEventListener('click', e => {
-  if (e.currentTarget === e.target) closeModal();
+  if (e.target === e.currentTarget) closeModal();
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
@@ -306,14 +943,11 @@ async function openStreams(id) {
     )
   );
 
-  // Sort HD first, then by stream number within each tier
-  const allStreams = results
+  currentStreams = results
     .filter(r => r.status === 'fulfilled')
     .flatMap(r => r.value)
     .filter(s  => s.embedUrl)
     .sort((a, b) => (b.hd - a.hd) || (a.streamNo - b.streamNo));
-
-  currentStreams = allStreams;
 
   if (!currentStreams.length) {
     document.getElementById('stream-frame').innerHTML = '<div class="stream-msg">No streams available right now.</div>';
@@ -322,12 +956,11 @@ async function openStreams(id) {
 
   const hdStreams = currentStreams.filter(s =>  s.hd);
   const sdStreams = currentStreams.filter(s => !s.hd);
-
-  const tabsEl = document.getElementById('stream-tabs');
+  const tabsEl   = document.getElementById('stream-tabs');
   tabsEl.innerHTML = '';
 
   const addTab = (s, i) => {
-    const lang = s.language || cap(s._source);
+    const lang = s.language || catLabel(s._source || 'stream');
     const num  = s.streamNo > 1 ? ` #${s.streamNo}` : '';
     const b    = document.createElement('button');
     b.className   = ['stab', s.hd ? 'hd' : '', i === 0 ? 'active' : ''].filter(Boolean).join(' ');
@@ -337,14 +970,12 @@ async function openStreams(id) {
   };
 
   hdStreams.forEach((s, i) => addTab(s, i));
-
   if (hdStreams.length && sdStreams.length) {
-    const div = document.createElement('span');
-    div.className   = 'stab-div';
-    div.textContent = '· SD ·';
-    tabsEl.appendChild(div);
+    const sep = document.createElement('span');
+    sep.className   = 'stab-div';
+    sep.textContent = '· SD ·';
+    tabsEl.appendChild(sep);
   }
-
   sdStreams.forEach((s, i) => addTab(s, hdStreams.length + i));
 
   selectStream(0);
@@ -362,25 +993,43 @@ function selectStream(i) {
 }
 
 function closeModal() {
-  document.getElementById('modal').hidden            = true;
-  document.getElementById('stream-frame').innerHTML  = '';
-  document.body.style.overflow                       = '';
+  document.getElementById('modal').hidden           = true;
+  document.getElementById('stream-frame').innerHTML = '';
+  document.body.style.overflow = '';
   currentStreams = [];
 }
 
 /* ---- helpers ---------------------------------------------------------- */
-function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function startOfDay(ms) {
+  const d = new Date(ms);
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
-function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+function hookLogoErrors(view) {
+  view.querySelectorAll('img.logo').forEach(img => {
+    img.onerror = () => {
+      const s = document.createElement('span');
+      s.className   = 'ini';
+      s.textContent = img.dataset.ini || '?';
+      img.replaceWith(s);
+    };
+  });
+}
+
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function appendFoot(view) {
   const f = document.createElement('p');
   f.className   = 'foot';
-  f.textContent = 'Match data via streamed.pk API. Streams are embedded from third-party sources — pleYe does not host any video.';
+  f.textContent = 'Fixture data via streamed.pk · live scores via ESPN. Streams are third-party embeds — pleYe does not host any video.';
   view.appendChild(f);
 }
 
-/* ---- go --------------------------------------------------------------- */
+/* ---- init ------------------------------------------------------------- */
 pull();
 setInterval(pull, 30_000);
 </script>
