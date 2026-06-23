@@ -438,8 +438,9 @@
 </div>
 
 <script>
-const API       = 'https://streamed.pk/api';
-const BADGE     = 'https://streamed.pk/api/images/badge';
+const PROXY     = 'https://pleye-proxy.mouddin007.workers.dev';
+const API       = PROXY ? `${PROXY}/api` : 'https://streamed.pk/api';
+const BADGE     = PROXY ? `${PROXY}/api/images/badge` : 'https://streamed.pk/api/images/badge';
 const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports';
 
 /* ---- category normalisation ------------------------------------------- */
@@ -568,10 +569,11 @@ async function fetchESPN() {
         const altNote = comp.altGameNote || '';
         const league = altNote.split(',')[0].trim() || fallbackName || '';
 
+        const prev = idx.get(key);
         idx.set(key, {
           state,
           detail: ev.status?.type?.shortDetail || '',
-          league,
+          league: league || (prev && prev.league) || '',
           scores: (state === 'in' || state === 'post')
             ? { home: home.score, away: away.score }
             : null,
