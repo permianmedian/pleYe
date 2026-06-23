@@ -886,7 +886,7 @@ function card(m, forceEnded = false) {
   let bodyHtml;
   if (m.teams) {
     const clockHtml = isLive && m.effDetail
-      ? `<div class="match-clock">${esc(m.effDetail)}</div>` : '';
+      const clockHtml = '';
     bodyHtml = `<div class="teams">
       ${teamRow(m.teams.home, sc?.home ?? null, homeLosing)}
       ${teamRow(m.teams.away, sc?.away ?? null, awayLosing)}
