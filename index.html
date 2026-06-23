@@ -457,8 +457,8 @@ const CAT_NORM = {
   'australian-rules':          'australian-football',
   'australian-rules-football': 'australian-football',
   'aussie-rules':              'australian-football',
-  'canadian-football':         'canadian-football',
-  'canadian_football':         'canadian-football',
+  'canadian-football':         'football',
+  'canadian_football':         'football',
   'motor-sports':              'motorsport',
   'ice-hockey':                'hockey',
   'icehockey':                 'hockey',
@@ -478,7 +478,6 @@ const CAT_LABEL = {
   'cricket':             'Cricket',
   'rugby':               'Rugby',
   'australian-football': 'AFL',
-  'canadian-football':   'Canadian Football',
   'golf':                'Golf',
   'motorsport':          'Motorsport',
   'formula-1':           'Formula 1',
@@ -489,7 +488,7 @@ const CAT_LABEL = {
 const CAT_ORDER = [
   'soccer','basketball','football','baseball','fighting',
   'hockey','tennis','cricket','rugby',
-  'australian-football','canadian-football',
+  'australian-football',
   'golf','motorsport','formula-1',
   'billiards','darts',
 ];
@@ -513,7 +512,6 @@ const DURATION = {
   fighting:              240 * 60_000,
   hockey:                160 * 60_000,
   'australian-football': 140 * 60_000,
-  'canadian-football':   220 * 60_000,
   rugby:                 120 * 60_000,
   tennis:                180 * 60_000,
   cricket:               480 * 60_000,
@@ -523,52 +521,59 @@ const DURATION = {
 /* ---- ESPN scoreboards ------------------------------------------------- */
 // These sport/league pairs are fetched on every pull. Failures are silently ignored.
 const ESPN_LEAGUES = [
-  ['soccer',     'all'],           // broad soccer coverage
-  ['soccer',     'fifa.world'],
-  ['soccer',     'uefa.nations'],
-  ['soccer',     'uefa.champions'],
-  ['basketball', 'nba'],
-  ['basketball', 'wnba'],
-  ['football',   'nfl'],
-  ['baseball',   'mlb'],
-  ['hockey',     'nhl'],
+  ['soccer',     'all',             null],
+  ['soccer',     'fifa.world',      'FIFA World Cup'],
+  ['soccer',     'uefa.nations',    'UEFA Nations League'],
+  ['soccer',     'uefa.champions',  'Champions League'],
+  ['basketball', 'nba',             'NBA'],
+  ['basketball', 'wnba',            'WNBA'],
+  ['football',   'nfl',             'NFL'],
+  ['football',   'cfl',             'CFL'],
+  ['baseball',   'mlb',             'MLB'],
+  ['hockey',     'nhl',             'NHL'],
 ];
 
 async function fetchESPN() {
   const results = await Promise.allSettled(
-    ESPN_LEAGUES.map(([sport, league]) =>
+    ESPN_LEAGUES.map(([sport, league, fallbackName]) =>
       fetch(`${ESPN_BASE}/${sport}/${league}/scoreboard`)
         .then(r => r.ok ? r.json() : { events: [] })
-        .then(j => j.events || [])
+        .then(j => ({ events: j.events || [], fallbackName }))
     )
   );
 
   const idx = new Map();
   results
     .filter(r => r.status === 'fulfilled')
-    .flatMap(r => r.value)
-    .forEach(ev => {
-      const comps = ev.competitions?.[0]?.competitors;
-      if (!comps || comps.length < 2) return;
+    .forEach(r => {
+      const { events, fallbackName } = r.value;
+      events.forEach(ev => {
+        const comp  = ev.competitions?.[0];
+        const comps = comp?.competitors;
+        if (!comps || comps.length < 2) return;
 
-      const home  = comps.find(c => c.homeAway === 'home') || comps[0];
-      const away  = comps.find(c => c.homeAway === 'away') || comps[1];
-      const state = ev.status?.type?.state || 'pre'; // 'pre' | 'in' | 'post'
+        const home  = comps.find(c => c.homeAway === 'home') || comps[0];
+        const away  = comps.find(c => c.homeAway === 'away') || comps[1];
+        const state = ev.status?.type?.state || 'pre';
 
-      const key = [home, away]
-        .map(c => normStr(c.team?.displayName || c.team?.name || ''))
-        .sort()
-        .join('|');
+        const key = [home, away]
+          .map(c => normStr(c.team?.displayName || c.team?.name || ''))
+          .sort()
+          .join('|');
 
-      if (!key || key === '|') return;
+        if (!key || key === '|') return;
 
-      idx.set(key, {
-        state,
-        detail: ev.status?.type?.shortDetail || '',
-        // Scores are only meaningful in-progress or final
-        scores: (state === 'in' || state === 'post')
-          ? { home: home.score, away: away.score }
-          : null,
+        const altNote = comp.altGameNote || '';
+        const league = altNote.split(',')[0].trim() || fallbackName || '';
+
+        idx.set(key, {
+          state,
+          detail: ev.status?.type?.shortDetail || '',
+          league,
+          scores: (state === 'in' || state === 'post')
+            ? { home: home.score, away: away.score }
+            : null,
+        });
       });
     });
 
@@ -620,7 +625,7 @@ function computeStatus(m) {
 
   if (espn) {
     const state = espn.state === 'in' ? 'in' : espn.state === 'post' ? 'post' : 'pre';
-    return { state, detail: espn.detail, scores: espn.scores };
+    return { state, detail: espn.detail, scores: espn.scores, league: espn.league || '' };
   }
 
   // No ESPN data — use Streamed.pk live flag + time-based ended detection
@@ -680,7 +685,7 @@ async function pull() {
     // Augment each match with computed status (live/ended/pre, scores, clock)
     MATCHES = Object.values(merged).map(m => {
       const st = computeStatus(m);
-      return { ...m, effState: st.state, effDetail: st.detail, effScores: st.scores };
+      return { ...m, effState: st.state, effDetail: st.detail, effScores: st.scores, league: st.league || '' };
     });
     MATCH_MAP = {};
     MATCHES.forEach(m => { MATCH_MAP[m.id] = m; });
@@ -901,7 +906,7 @@ function card(m, forceEnded = false) {
 
   return `<div class="${cls}">
   <div class="card-top">
-    <span class="cat-label">${esc(catLabel(m.cat || m.category || 'sport'))}</span>
+    <span class="cat-label">${esc(catLabel(m.cat || m.category || 'sport'))}${m.league ? ' · ' + esc(m.league) : ''}</span>
     <span class="card-status" data-s="${statusAttr}">${statusInner}</span>
   </div>
   ${bodyHtml}
